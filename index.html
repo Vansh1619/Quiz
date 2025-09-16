@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz System - Timed & Secure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .role-selection {
+            text-align: center;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .share-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8e8 100%);
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-link {
+            background: #fff;
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #2e7d32;
+            margin: 15px 0;
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .options-container {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .option-input input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option-input input[type="text"] {
+            flex: 1;
+            margin: 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .questions-list, .results-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .question-item, .result-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .options-list .option-display {
+            display: block;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .options-list .correct-option {
+            background: #d4edda;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .quiz-interface {
+            display: none;
+        }
+        
+        /* Styles for privacy features */
+        .secure-content {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Standard syntax */
+        }
+
+        .blurred {
+            filter: blur(10px);
+            pointer-events: none;
+            transition: filter 0.3s ease;
+        }
+
+        .question-container {
+            position: relative; /* For timer positioning */
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .timer-container {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .question-number {
+            color: #667eea;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .question {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            padding-right: 100px; /* Space for timer */
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* --- STYLES FOR ANSWER FEEDBACK --- */
+        .quiz-options.answered .quiz-option {
+            pointer-events: none;
+            cursor: default;
+        }
+        .quiz-option.correct {
+            background: #d4edda !important;
+            border-color: #155724 !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+        .quiz-option.wrong {
+            background: #f8d7da !important;
+            border-color: #721c24 !important;
+            color: #721c24 !important;
+        }
+        /* --- END ANSWER FEEDBACK STYLES --- */
+
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #667eea;
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: flex-end; /* Align Next button to the right */
+            margin-top: 20px;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .code-input {
+            font-family: 'Courier New', monospace !important;
+            font-size: 0.9rem !important;
+            padding: 15px !important;
+            border: 3px solid #667eea !important;
+            min-height: 100px !important;
+        }
+
+        .student-info {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .student-name {
+            font-size: 0.9rem;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-result {
+            flex: 1;
+        }
+
+        .student-result .name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .student-result .score {
+            color: #667eea;
+            font-size: 0.9rem;
+        }
+
+        .student-result .date {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .result-url-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-url {
+            background: white;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            color: #856404;
+            margin: 10px 0;
+            word-break: break-all;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .collect-section {
+            background: #e8f4fd;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .url-input {
+            width: 100%;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 10px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        /* Footer Copyright Style */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .role-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Quiz System</h1>
+            <p>✅ Universal Compatibility: Works on Any Phone, Tablet, or PC.</p>
+        </div>
+
+        <div class="content">
+            <div id="roleSelection" class="role-selection">
+                <h2>Choose Your Role</h2>
+                <p>✅ Students can use any device<br>✅ Results are automatically collected in the teacher's Excel!</p>
+                
+                <div class="role-buttons">
+                    <button class="role-btn" onclick="selectRole('teacher')">
+                        👨‍🏫 Teacher<br>
+                        <small>Create quiz & collect results</small>
+                    </button>
+                    <button class="role-btn" onclick="selectRole('student')">
+                        👨‍🎓 Student<br>
+                        <small>Take quiz on any device</small>
+                    </button>
+                </div>
+            </div>
+
+            <div id="teacherPanel" class="panel">
+                <button class="back-btn" onclick="goHome()">← Back to Home</button>
+                
+                <div id="shareSection" class="share-section" style="display: none;">
+                    <h3>📤 Share Quiz Link with Students</h3>
+                    <p><strong>Quiz ID:</strong> <span id="displayQuizId">Generating...</span></p>
+                    
+                    <div class="quiz-link" id="quizLink">Generating quiz link...</div>
+                    <button class="copy-btn" onclick="copyQuizLink()">📋 Copy Quiz Link</button>
+                    
+                    <p style="margin-top: 15px; color: #2e7d32; font-weight: bold;">
+                        ✅ Students will send you their result links automatically after completing the quiz!
+                    </p>
+                </div>
+
+                <div class="section">
+                    <h3>📝 Create New Question</h3>
+                    <form id="questionForm">
+                        <div class="form-group">
+                            <label>Question:</label>
+                            <textarea id="questionText" placeholder="Enter your question here..." rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Answer Options (select the correct answer):</label>
+                            <div class="options-container">
+                                <div class="option-input">
+                                    <input type="radio" name="correctOption" value="0" required>
+                                    <span class="option-label">A.</span>
+                                    <input type="text" id="optionText0" placeholder="Enter option A" required>
+                                </div>
+                                <div class="option-input">
+                                    <input type="radio" name="correctOption" value="1">
+                                    <span class="option-label">B.</span>
+                                    <input type="text" id="optionText1" placeholder="Enter option B" required>
+                                </div>
+                                <div class="option-input">
+                                    <input type="radio" name="correctOption" value="2">
+                                    <span class="option-label">C.</span>
+                                    <input type="text" id="optionText2" placeholder="Enter option C" required>
+                                </div>
+                                <div class="option-input">
+                                    <input type="radio" name="correctOption" value="3">
+                                    <span class="option-label">D.</span>
+                                    <input type="text" id="optionText3" placeholder="Enter option D" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">✅ Add Question</button>
+                        <button type="button" class="btn btn-info" onclick="exportQuestions()">📥 Export Questions</button>
+                        <button type="button" class="btn btn-success" onclick="generateNewQuiz()">🔄 New Quiz</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Questions (<span id="questionCount">0</span>)</h3>
+                    <div id="questionsList" class="questions-list"></div>
+                    <button class="btn btn-danger" onclick="clearAllQuestions()" style="margin-top: 10px;">
+                        🗑️ Clear Questions
+                    </button>
+                </div>
+
+                <div class="section">
+                    <h3>📊 Collect Student Results</h3>
+                    <div class="collect-section">
+                        <h4>🔗 Paste Student Result Links Here:</h4>
+                        <p style="margin-bottom: 10px; color: #666;">Students will share result links with you after completing the quiz. Paste all links below (one per line):</p>
+                        <textarea id="resultUrls" class="url-input" placeholder="Paste student result links here, one per line...
+
+Example:
+https://yoursite.com#result=eyJzdHVkZW50TmFtZSI6IkpvaG4i...
+https://yoursite.com#result=eyJzdHVkZW50TmFtZSI6IkphbmUi..."></textarea>
+                        <button class="btn btn-primary" onclick="collectResults()">🔄 Collect All Results</button>
+                    </div>
+                    
+                    <div id="collectedResultsList" class="results-list">
+                        <p style="text-align: center; color: #666; padding: 20px;">No results collected yet. Results will appear here when you paste student result links above.</p>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-success" onclick="downloadAllResults()">📥 Download All Results (Excel)</button>
+                        <button class="btn btn-danger" onclick="clearCollectedResults()">🗑️ Clear Results</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="studentJoin" class="panel">
+                <button class="back-btn" onclick="goHome()">← Back to Home</button>
+                
+                <div class="section">
+                    <h3>👤 Enter Your Information</h3>
+                    <div class="form-group">
+                        <label>Your Name:</label>
+                        <input type="text" id="studentName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Paste Quiz Link from Teacher:</label>
+                        <textarea id="joinCode" class="code-input" placeholder="Paste the complete quiz link your teacher shared with you here..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="joinQuiz()">🚀 Join Quiz</button>
+                    
+                    <p style="margin-top: 20px; color: #666; text-align: center;">
+                        <small>💡 Paste the complete link from your teacher. After completing the quiz, you'll get a result link to share back with them!</small>
+                    </p>
+                </div>
+            </div>
+
+            <div id="studentPanel" class="panel">
+                <button class="back-btn" onclick="goBackToJoin()">← Enter Different Link</button>
+                
+                <div class="student-info">
+                    <div class="student-name">👤 Student: <span id="currentStudentName">Unknown</span></div>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Quiz ID: <span id="studentQuizId">Unknown</span></div>
+                </div>
+                
+                <div id="quizStart" class="section">
+                    <h3>🚀 Ready to Take the Quiz?</h3>
+                    <p id="quizInfo">Loading quiz information...</p>
+                    <button id="startQuizBtn" class="btn btn-primary" onclick="startQuiz()" disabled>
+                        Start Quiz
+                    </button>
+                </div>
+
+                <div id="quizInterface" class="quiz-interface">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <div id="currentQuestion" class="question-container">
+                        </div>
+
+                    <div class="navigation">
+                        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <div id="results" class="results">
+                    <div class="score-circle" id="scoreCircle">0/0</div>
+                    <h2 id="resultTitle">Quiz Complete!</h2>
+                    <p id="resultMessage">Great job on completing the quiz!</p>
+                    
+                    <div id="resultUrlSection" class="result-url-section">
+                        <h4>📤 IMPORTANT: Share This Link with Your Teacher</h4>
+                        <p><strong>Copy and send this link to your teacher:</strong></p>
+                        <div class="result-url" id="resultUrl">Generating...</div>
+                        <button class="copy-btn" onclick="copyResultUrl()">📋 Copy Result Link</button>
+                        <p style="margin-top: 10px;"><small>💡 Your teacher needs this link to include your score in the class results Excel file!</small></p>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="downloadResults()">
+                            📥 Download My Results
+                        </button>
+                        <button class="btn btn-secondary" onclick="retakeQuiz()">
+                            🔄 Retake Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+             <p>&copy; 2025 Vansh, Prushti, Hetu. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let studentAnswers = {};
+        let currentRole = null;
+        let currentStudentName = null;
+        let quizId = null;
+        let collectedResults = [];
+        let questionTimerInterval = null;
+
+        function selectRole(role) {
+            currentRole = role;
+            document.getElementById('roleSelection').style.display = 'none';
+            
+            if (role === 'teacher') {
+                document.getElementById('teacherPanel').style.display = 'block';
+                loadTeacherData();
+            } else {
+                document.getElementById('studentJoin').style.display = 'block';
+            }
+        }
+
+        function goHome() {
+            document.getElementById('roleSelection').style.display = 'block';
+            document.getElementById('teacherPanel').style.display = 'none';
+            document.getElementById('studentJoin').style.display = 'none';
+            document.getElementById('studentPanel').style.display = 'none';
+            document.getElementById('quizInterface').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('quizStart').style.display = 'block';
+            currentRole = null;
+            questions = [];
+            currentStudentName = null;
+            quizId = null;
+        }
+
+        function goBackToJoin() {
+            document.getElementById('studentPanel').style.display = 'none';
+            document.getElementById('studentJoin').style.display = 'block';
+            document.getElementById('quizInterface').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('quizStart').style.display = 'block';
+        }
+
+        // Teacher Functions
+        function loadTeacherData() {
+            const savedQuestions = localStorage.getItem('quiz_questions');
+            const savedQuizId = localStorage.getItem('quiz_id');
+            const savedResults = localStorage.getItem('collected_results');
+            
+            if (savedQuestions) {
+                questions = JSON.parse(savedQuestions);
+            }
+            
+            if (savedQuizId) {
+                quizId = savedQuizId;
+            }
+
+            if (savedResults) {
+                collectedResults = JSON.parse(savedResults);
+            }
+            
+            loadQuestions();
+            updateShareLink();
+            displayCollectedResults();
+        }
+
+        function generateNewQuiz() {
+            if (confirm('This will create a new quiz and clear existing questions and results. Continue?')) {
+                questions = [];
+                quizId = 'QUIZ_' + Date.now();
+                collectedResults = [];
+                
+                localStorage.removeItem('quiz_questions');
+                localStorage.removeItem('quiz_id');
+                localStorage.removeItem('collected_results');
+                
+                localStorage.setItem('quiz_id', quizId);
+                
+                loadQuestions();
+                updateShareLink();
+                displayCollectedResults();
+                showAlert('New quiz created! Add questions to generate shareable link.', 'success');
+            }
+        }
+
+        document.getElementById('questionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const questionText = document.getElementById('questionText').value.trim();
+            const option1 = document.getElementById('optionText0').value.trim();
+            const option2 = document.getElementById('optionText1').value.trim();
+            const option3 = document.getElementById('optionText2').value.trim();
+            const option4 = document.getElementById('optionText3').value.trim();
+            const correctOptionIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value);
+            
+            const options = [option1, option2, option3, option4];
+            
+            if (questionText && options.every(option => option)) {
+                const newQuestion = {
+                    id: Date.now(),
+                    question: questionText,
+                    options: options,
+                    correctAnswer: correctOptionIndex
+                };
+                
+                questions.push(newQuestion);
+                saveQuizData();
+                loadQuestions();
+                updateShareLink();
+                
+                this.reset();
+                showAlert('Question added successfully!', 'success');
+            } else {
+                showAlert('Please fill all fields!', 'warning');
+            }
+        });
+
+        function saveQuizData() {
+            if (!quizId) {
+                quizId = 'QUIZ_' + Date.now();
+            }
+            
+            localStorage.setItem('quiz_questions', JSON.stringify(questions));
+            localStorage.setItem('quiz_id', quizId);
+        }
+
+        function loadQuestions() {
+            const questionsList = document.getElementById('questionsList');
+            const questionCount = document.getElementById('questionCount');
+            
+            questionCount.textContent = questions.length;
+            questionsList.innerHTML = '';
+            
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No questions created yet. Add your first question above!</p>';
+                return;
+            }
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="options-list">
+                        ${q.options.map((option, optIndex) => 
+                            `<div class="option-display ${optIndex === q.correctAnswer ? 'correct-option' : ''}">${String.fromCharCode(65 + optIndex)}. ${option}</div>`
+                        ).join('')}
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteQuestion(${q.id})">🗑️ Delete</button>
+                `;
+                questionsList.appendChild(questionDiv);
+            });
+        }
+
+        function deleteQuestion(questionId) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                questions = questions.filter(q => q.id !== questionId);
+                saveQuizData();
+                loadQuestions();
+                updateShareLink();
+                showAlert('Question deleted successfully!', 'success');
+            }
+        }
+
+        function clearAllQuestions() {
+            if (confirm('Are you sure you want to delete ALL questions? This cannot be undone!')) {
+                questions = [];
+                saveQuizData();
+                loadQuestions();
+                updateShareLink();
+                showAlert('All questions cleared!', 'success');
+            }
+        }
+
+        function updateShareLink() {
+            const shareSection = document.getElementById('shareSection');
+            const quizLinkElement = document.getElementById('quizLink');
+            const displayQuizIdElement = document.getElementById('displayQuizId');
+            
+            if (questions.length > 0) {
+                shareSection.style.display = 'block';
+                
+                if (!quizId) {
+                    quizId = 'QUIZ_' + Date.now();
+                    localStorage.setItem('quiz_id', quizId);
+                }
+                
+                displayQuizIdElement.textContent = quizId;
+                
+                const quizData = {
+                    id: quizId,
+                    questions: questions,
+                    version: '7.0'
+                };
+                
+                const encodedData = btoa(JSON.stringify(quizData));
+                const currentUrl = window.location.href.split('#')[0];
+                const quizLink = `${currentUrl}#quiz=${encodedData}`;
+                
+                quizLinkElement.textContent = quizLink;
+            } else {
+                shareSection.style.display = 'none';
+            }
+        }
+
+        function copyQuizLink() {
+            const quizLink = document.getElementById('quizLink').textContent;
+            
+            navigator.clipboard.writeText(quizLink).then(() => {
+                showAlert('📋 Quiz link copied! Share this with your students. They will send you result links after completing the quiz.', 'success');
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = quizLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showAlert('📋 Quiz link copied! Share this with your students.', 'success');
+            });
+        }
+
+        function exportQuestions() {
+            if (questions.length === 0) {
+                showAlert('No questions to export!', 'warning');
+                return;
+            }
+            
+            const data = [
+                ['Quiz ID', quizId || 'Not generated', '', '', '', ''],
+                ['Question', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer']
+            ];
+            
+            questions.forEach(q => {
+                data.push([
+                    q.question,
+                    ...q.options,
+                    q.options[q.correctAnswer]
+                ]);
+            });
+            
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Questions");
+            XLSX.writeFile(workbook, `Quiz_Questions_${quizId || 'EXPORT'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // Results Collection Functions
+        function collectResults() {
+            const urlsText = document.getElementById('resultUrls').value.trim();
+            if (!urlsText) {
+                showAlert('Please paste student result links!', 'warning');
+                return;
+            }
+
+            const urls = urlsText.split('\n').filter(url => url.trim());
+            let successCount = 0;
+            let errorCount = 0;
+
+            urls.forEach(url => {
+                try {
+                    const result = decodeResultFromUrl(url.trim());
+                    if (result) {
+                        const existingIndex = collectedResults.findIndex(r => 
+                            r.studentName === result.studentName && r.quizId === result.quizId
+                        );
+                        
+                        if (existingIndex >= 0) {
+                            collectedResults[existingIndex] = result;
+                        } else {
+                            collectedResults.push(result);
+                        }
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                } catch (error) {
+                    errorCount++;
+                }
+            });
+
+            localStorage.setItem('collected_results', JSON.stringify(collectedResults));
+            displayCollectedResults();
+            
+            if (successCount > 0) {
+                showAlert(`✅ Successfully collected ${successCount} student results!`, 'success');
+            }
+            if (errorCount > 0) {
+                showAlert(`⚠️ ${errorCount} links were invalid or couldn't be processed.`, 'warning');
+            }
+
+            document.getElementById('resultUrls').value = '';
+        }
+
+        function decodeResultFromUrl(url) {
+            try {
+                const hashIndex = url.indexOf('#result=');
+                if (hashIndex === -1) return null;
+                
+                const encodedData = url.substring(hashIndex + 8);
+                const decodedData = decodeURIComponent(encodedData);
+                const result = JSON.parse(atob(decodedData));
+                
+                return result;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function displayCollectedResults() {
+            const resultsList = document.getElementById('collectedResultsList');
+            
+            resultsList.innerHTML = '';
+            
+            if (collectedResults.length === 0) {
+                resultsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No results collected yet. Results will appear here when you paste student result links above.</p>';
+                return;
+            }
+            
+            collectedResults.forEach((result, index) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item';
+                const percentage = Math.round((result.score / result.totalQuestions) * 100);
+                resultDiv.innerHTML = `
+                    <div class="student-result">
+                        <div class="name">${index + 1}. ${result.studentName}</div>
+                        <div class="score">Score: ${result.score}/${result.totalQuestions} (${percentage}%)</div>
+                        <div class="date">Completed: ${new Date(result.completedAt).toLocaleString()}</div>
+                    </div>
+                `;
+                resultsList.appendChild(resultDiv);
+            });
+        }
+
+        function downloadAllResults() {
+            if (collectedResults.length === 0) {
+                showAlert('No student results collected yet! Ask students to share their result links with you.', 'warning');
+                return;
+            }
+            
+            const data = [
+                ['Quiz ID', quizId || 'Unknown', '', '', ''],
+                ['Export Date', new Date().toLocaleString(), '', '', ''],
+                ['Student Name', 'Score', 'Total Questions', 'Percentage', 'Completed At']
+            ];
+            
+            collectedResults.forEach(result => {
+                const percentage = Math.round((result.score / result.totalQuestions) * 100);
+                data.push([
+                    result.studentName,
+                    result.score,
+                    result.totalQuestions,
+                    `${percentage}%`,
+                    new Date(result.completedAt).toLocaleString()
+                ]);
+            });
+            
+            const totalStudents = collectedResults.length;
+            const averageScore = collectedResults.reduce((sum, r) => sum + r.score, 0) / totalStudents;
+            const averagePercentage = Math.round((averageScore / questions.length) * 100);
+            
+            data.push([]);
+            data.push(['Summary Statistics', '', '', '', '']);
+            data.push(['Total Students', totalStudents, '', '', '']);
+            data.push(['Average Score', averageScore.toFixed(1), questions.length, `${averagePercentage}%`, '']);
+            data.push(['Highest Score', Math.max(...collectedResults.map(r => r.score)), questions.length, '', '']);
+            data.push(['Lowest Score', Math.min(...collectedResults.map(r => r.score)), questions.length, '', '']);
+            
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            
+            worksheet['!cols'] = [{wch: 25}, {wch: 10}, {wch: 15}, {wch: 15}, {wch: 20}];
+            
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Student Results");
+            XLSX.writeFile(workbook, `ALL_STUDENT_RESULTS_${quizId || 'QUIZ'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            showAlert('Excel file downloaded successfully!', 'success');
+        }
+
+        function clearCollectedResults() {
+            if (confirm('Are you sure you want to clear all collected results?')) {
+                collectedResults = [];
+                localStorage.removeItem('collected_results');
+                displayCollectedResults();
+                showAlert('All collected results cleared!', 'success');
+            }
+        }
+
+        // Student Functions
+        function joinQuiz() {
+            const studentName = document.getElementById('studentName').value.trim();
+            const joinInput = document.getElementById('joinCode').value.trim();
+            
+            if (!studentName) {
+                showAlert('Please enter your name!', 'warning');
+                return;
+            }
+
+            if (!joinInput) {
+                showAlert('Please paste the quiz link!', 'warning');
+                return;
+            }
+
+            if (joinInput.includes('#quiz=')) {
+                try {
+                    const hashIndex = joinInput.indexOf('#quiz=');
+                    const encodedData = joinInput.substring(hashIndex + 6);
+                    
+                    const quizData = JSON.parse(atob(encodedData));
+                    
+                    if (quizData.questions && quizData.questions.length > 0) {
+                        questions = quizData.questions;
+                        quizId = quizData.id;
+                        currentStudentName = studentName;
+                        
+                        document.getElementById('studentJoin').style.display = 'none';
+                        document.getElementById('studentPanel').style.display = 'block';
+                        document.getElementById('currentStudentName').textContent = studentName;
+                        document.getElementById('studentQuizId').textContent = quizId;
+                        initializeStudentPanel();
+                        showAlert(`✅ Welcome ${studentName}! Quiz loaded successfully!`, 'success');
+                        return;
+                    }
+                } catch (error) {
+                    showAlert('❌ Invalid quiz link. Please check with your teacher.', 'danger');
+                    return;
+                }
+            }
+
+            showAlert('❌ Invalid quiz link format. Please paste the complete link from your teacher.', 'danger');
+        }
+
+        function initializeStudentPanel() {
+            const quizInfo = document.getElementById('quizInfo');
+            const startQuizBtn = document.getElementById('startQuizBtn');
+            
+            if (questions.length === 0) {
+                quizInfo.innerHTML = `<div class="alert alert-warning">⚠️ No questions available! Please check the quiz link.</div>`;
+                startQuizBtn.disabled = true;
+            } else {
+                quizInfo.innerHTML = `
+                    <div class="alert alert-success">✅ Quiz loaded! There are <strong>${questions.length}</strong> questions waiting for you.</div>
+                    <p><strong>Instructions:</strong></p>
+                    <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                        <li>Each question has a <strong>1 minute timer</strong>.</li>
+                        <li>The quiz will automatically move to the next question if time runs out.</li>
+                        <li><strong>Do not switch tabs or windows</strong>, or the quiz will be blurred.</li>
+                        <li>After completing, share the result link with your teacher!</li>
+                    </ul>
+                `;
+                startQuizBtn.disabled = false;
+            }
+        }
+
+        // --- Privacy & Timer Functions ---
+        function handleScreenshotAttempt(e) {
+            if (e.key === 'PrintScreen' || (e.ctrlKey && e.shiftKey) || (e.metaKey && e.shiftKey)) {
+                e.preventDefault();
+                showAlert('Screenshots are disabled during the quiz.', 'danger');
+            }
+        }
+        function disableContextMenu(e) {
+            e.preventDefault();
+            showAlert('Right-clicking is disabled during the quiz.', 'danger');
+        }
+        function handleVisibilityChange() {
+            const quizInterface = document.getElementById('quizInterface');
+            if (document.hidden || !document.hasFocus()) {
+                quizInterface.classList.add('blurred');
+                showAlert('Please stay on the quiz page.', 'warning');
+            } else {
+                quizInterface.classList.remove('blurred');
+            }
+        }
+        function startQuestionTimer() {
+            let timeLeft = 60;
+            const timerElement = document.getElementById('questionTimer');
+            if (!timerElement) return;
+
+            timerElement.textContent = timeLeft;
+            questionTimerInterval = setInterval(() => {
+                timeLeft--;
+                if (timerElement) {
+                   timerElement.textContent = timeLeft;
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(questionTimerInterval);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+        // --- End Privacy & Timer Functions ---
+
+        function startQuiz() {
+            document.getElementById('quizStart').style.display = 'none';
+            document.getElementById('quizInterface').style.display = 'block';
+            currentQuestionIndex = 0;
+            studentAnswers = {};
+
+            // Add privacy listeners
+            window.addEventListener('contextmenu', disableContextMenu);
+            window.addEventListener('keyup', handleScreenshotAttempt);
+            window.addEventListener('blur', handleVisibilityChange);
+            window.addEventListener('focus', handleVisibilityChange);
+            document.getElementById('quizInterface').classList.add('secure-content');
+            
+            showCurrentQuestion();
+        }
+
+        function showCurrentQuestion() {
+            if (questions.length === 0) return;
+            
+            clearInterval(questionTimerInterval);
+
+            const question = questions[currentQuestionIndex];
+            const currentQuestionDiv = document.getElementById('currentQuestion');
+            
+            currentQuestionDiv.innerHTML = `
+                <div class="timer-container">Time Left: <span id="questionTimer">60</span>s</div>
+                <div class="question-number">Question ${currentQuestionIndex + 1} of ${questions.length}</div>
+                <div class="question">${question.question}</div>
+                <div class="quiz-options">
+                    ${question.options.map((option, index) => `
+                        <div class="quiz-option" 
+                             onclick="selectAnswer(${index})">
+                            ${String.fromCharCode(65 + index)}. ${option}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            startQuestionTimer();
+            updateProgress();
+            updateNavigationButtons();
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function selectAnswer(optionIndex) {
+            studentAnswers[currentQuestionIndex] = optionIndex;
+            
+            const optionElements = document.querySelectorAll('.quiz-option');
+            optionElements.forEach((option, index) => {
+                option.classList.toggle('selected', index === optionIndex);
+            });
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateNavigationButtons() {
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next';
+        }
+
+        function nextQuestion() {
+            clearInterval(questionTimerInterval);
+            document.getElementById('nextBtn').disabled = true;
+
+            const userAnswerIndex = studentAnswers[currentQuestionIndex];
+            const correctIndex = questions[currentQuestionIndex].correctAnswer;
+            
+            const optionElements = document.querySelectorAll('.quiz-option');
+            const optionsContainer = document.querySelector('.quiz-options');
+            optionsContainer.classList.add('answered');
+
+            if (userAnswerIndex === undefined) {
+                 showAlert('Time is up! Here is the correct answer.', 'warning');
+                 optionElements[correctIndex].classList.add('correct');
+            } else {
+                optionElements[correctIndex].classList.add('correct');
+                if (userAnswerIndex !== correctIndex) {
+                    optionElements[userAnswerIndex].classList.add('wrong');
+                }
+            }
+            
+            const advance = () => {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    showCurrentQuestion();
+                } else {
+                    finishQuiz();
+                }
+            };
+
+            setTimeout(advance, 2500);
+        }
+
+        function finishQuiz() {
+            clearInterval(questionTimerInterval);
+
+            window.removeEventListener('contextmenu', disableContextMenu);
+            window.removeEventListener('keyup', handleScreenshotAttempt);
+            window.removeEventListener('blur', handleVisibilityChange);
+            window.removeEventListener('focus', handleVisibilityChange);
+            const quizInterface = document.getElementById('quizInterface');
+            quizInterface.classList.remove('secure-content', 'blurred');
+
+            calculateResults();
+            generateResultUrl();
+            quizInterface.style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function calculateResults() {
+            let score = 0;
+            const totalQuestions = questions.length;
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                if (studentAnswers[i] === questions[i].correctAnswer) {
+                    score++;
+                }
+            }
+            
+            document.getElementById('scoreCircle').textContent = `${score}/${totalQuestions}`;
+            
+            const percentage = Math.round((score / totalQuestions) * 100);
+            let title, message;
+            
+            if (percentage === 100) {
+                title = "Perfect Score! 🎉";
+                message = "Excellent! You got all questions right!";
+            } else if (percentage >= 80) {
+                title = "Great Job! 👏";
+                message = `Very good! You scored ${percentage}%!`;
+            } else if (percentage >= 60) {
+                title = "Good Work! 👍";
+                message = `Not bad! You scored ${percentage}%. Keep learning!`;
+            } else {
+                title = "Keep Learning! 📚";
+                message = `You scored ${percentage}%. Don't worry, practice makes perfect!`;
+            }
+            
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function generateResultUrl() {
+            let score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (studentAnswers[i] === questions[i].correctAnswer) {
+                    score++;
+                }
+            }
+
+            const result = {
+                studentName: currentStudentName,
+                quizId: quizId,
+                score: score,
+                totalQuestions: questions.length,
+                answers: studentAnswers,
+                completedAt: new Date().toISOString()
+            };
+
+            const encodedResult = btoa(JSON.stringify(result));
+            const currentUrl = window.location.href.split('#')[0];
+            const resultUrl = `${currentUrl}#result=${encodeURIComponent(encodedResult)}`;
+            
+            document.getElementById('resultUrl').textContent = resultUrl;
+        }
+
+        function copyResultUrl() {
+            const resultUrl = document.getElementById('resultUrl').textContent;
+            navigator.clipboard.writeText(resultUrl).then(() => {
+                showAlert('📋 Result link copied! Share this with your teacher so they can include your score in the Excel file.', 'success');
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = resultUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showAlert('📋 Result link copied! Share this with your teacher.', 'success');
+            });
+        }
+
+        function downloadResults() {
+            const data = [
+                ['Student Name', currentStudentName, '', ''],
+                ['Quiz ID', quizId || 'Unknown', '', ''],
+                ['Question', 'Your Answer', 'Correct Answer', 'Result']
+            ];
+            
+            questions.forEach((question, index) => {
+                const userAnswer = studentAnswers[index] !== undefined ? 
+                    question.options[studentAnswers[index]] : 'Not answered';
+                const correctAnswer = question.options[question.correctAnswer];
+                const isCorrect = studentAnswers[index] === question.correctAnswer ? '✓ Correct' : '✗ Wrong';
+                
+                data.push([
+                    question.question,
+                    userAnswer,
+                    correctAnswer,
+                    isCorrect
+                ]);
+            });
+            
+            const score = Object.keys(studentAnswers).reduce((acc, key) => {
+                return studentAnswers[key] === questions[key].correctAnswer ? acc + 1 : acc;
+            }, 0);
+            
+            data.push([]);
+            data.push(['Total Score', `${score}/${questions.length}`, '', `${Math.round((score/questions.length)*100)}%`]);
+            data.push(['Date Taken', new Date().toLocaleString(), '', '']);
+            
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            
+            worksheet['!cols'] = [{wch: 50}, {wch: 20}, {wch: 20}, {wch: 15}];
+            
+            XLSX.utils.book_append_sheet(workbook, worksheet, "My Results");
+            XLSX.writeFile(workbook, `${currentStudentName}_Quiz_Results_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        function retakeQuiz() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('quizStart').style.display = 'block';
+            studentAnswers = {};
+            currentQuestionIndex = 0;
+            initializeStudentPanel();
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const content = document.querySelector('.content');
+            content.insertBefore(alertDiv, content.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 4000);
+        }
+
+        window.addEventListener('load', function() {
+            const hash = window.location.hash;
+            if (hash.includes('#quiz=')) {
+                document.getElementById('roleSelection').style.display = 'none';
+                document.getElementById('studentJoin').style.display = 'block';
+                document.getElementById('joinCode').value = window.location.href;
+            }
+        });
+    </script>
+</body>
+</html>
