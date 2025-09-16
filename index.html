@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz System - Timed & Secure</title>
+    <title>Quizoaky - Timed & Secure Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,9 +14,35 @@
             box-sizing: border-box;
         }
 
+        /* --- KEYFRAME ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes backgroundPan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* --- END ANIMATIONS --- */
+
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            background-size: 400% 400%;
+            animation: backgroundPan 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,16 +51,19 @@
         }
 
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             max-width: 900px;
             width: 100%;
             overflow: hidden;
+            animation: fadeIn 0.6s ease-out forwards;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             color: white;
             padding: 30px;
             text-align: center;
@@ -40,6 +72,7 @@
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .content {
@@ -60,7 +93,7 @@
 
         .role-btn {
             padding: 20px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             color: white;
             border: none;
             border-radius: 15px;
@@ -69,11 +102,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
             min-width: 200px;
+            animation: slideInUp 0.5s ease-out forwards;
         }
+        
+        /* Staggered animation for role buttons */
+        .role-btn:nth-child(1) { animation-delay: 0.2s; }
+        .role-btn:nth-child(2) { animation-delay: 0.4s; }
+
 
         .role-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
         }
 
         .panel {
@@ -85,7 +124,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             margin-bottom: 20px;
             transition: all 0.3s ease;
@@ -101,8 +140,15 @@
             padding: 20px;
             background: #f8f9fa;
             border-radius: 10px;
-            border-left: 5px solid #667eea;
+            border-left: 5px solid #00F2FE;
+            animation: fadeIn 0.7s ease-out forwards;
         }
+        
+        /* Staggered animation for sections */
+        .panel .section:nth-of-type(1) { animation-delay: 0.1s; }
+        .panel .section:nth-of-type(2) { animation-delay: 0.2s; }
+        .panel .section:nth-of-type(3) { animation-delay: 0.3s; }
+
 
         .section h3 {
             color: #333;
@@ -175,8 +221,8 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #00F2FE;
+            box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.2);
         }
 
         .options-container {
@@ -209,7 +255,7 @@
 
         .option-label {
             font-weight: 600;
-            color: #667eea;
+            color: #00F2FE;
             min-width: 30px;
         }
 
@@ -230,7 +276,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             color: white;
         }
 
@@ -314,11 +360,12 @@
         }
 
         .question-container {
-            position: relative; /* For timer positioning */
+            position: relative;
             background: #f8f9fa;
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-out forwards;
         }
 
         .timer-container {
@@ -335,7 +382,7 @@
         }
 
         .question-number {
-            color: #667eea;
+            color: #FF00D4;
             font-size: 1rem;
             margin-bottom: 10px;
             font-weight: 600;
@@ -361,18 +408,26 @@
             padding: 15px 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
+        /* Staggered animation for quiz options */
+        .quiz-options .quiz-option:nth-child(1) { animation-delay: 0.2s; }
+        .quiz-options .quiz-option:nth-child(2) { animation-delay: 0.3s; }
+        .quiz-options .quiz-option:nth-child(3) { animation-delay: 0.4s; }
+        .quiz-options .quiz-option:nth-child(4) { animation-delay: 0.5s; }
+
+
         .quiz-option:hover {
-            background: #e3f2fd;
-            border-color: #667eea;
+            background: #f0fbff;
+            border-color: #00F2FE;
             transform: translateY(-2px);
         }
 
         .quiz-option.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             color: white;
-            border-color: #667eea;
+            border-color: #FF00D4;
         }
 
         /* --- STYLES FOR ANSWER FEEDBACK --- */
@@ -401,7 +456,7 @@
         }
 
         .progress-bar {
-            background: #667eea;
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             height: 100%;
             border-radius: 4px;
             width: 0%;
@@ -423,7 +478,7 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00F2FE, #FF00D4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -431,6 +486,7 @@
             color: white;
             font-size: 2rem;
             font-weight: bold;
+            animation: scaleUp 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
         }
 
         .alert {
@@ -462,7 +518,7 @@
             font-family: 'Courier New', monospace !important;
             font-size: 0.9rem !important;
             padding: 15px !important;
-            border: 3px solid #667eea !important;
+            border: 3px solid #00F2FE !important;
             min-height: 100px !important;
         }
 
@@ -498,7 +554,7 @@
         }
 
         .student-result .score {
-            color: #667eea;
+            color: #FF00D4;
             font-size: 0.9rem;
         }
 
@@ -578,7 +634,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎓 Quiz System</h1>
+            <h1>🎓 Quizoaky</h1>
             <p>✅ Universal Compatibility: Works on Any Phone, Tablet, or PC.</p>
         </div>
 
@@ -667,11 +723,7 @@
                     <div class="collect-section">
                         <h4>🔗 Paste Student Result Links Here:</h4>
                         <p style="margin-bottom: 10px; color: #666;">Students will share result links with you after completing the quiz. Paste all links below (one per line):</p>
-                        <textarea id="resultUrls" class="url-input" placeholder="Paste student result links here, one per line...
-
-Example:
-https://yoursite.com#result=eyJzdHVkZW50TmFtZSI6IkpvaG4i...
-https://yoursite.com#result=eyJzdHVkZW50TmFtZSI6IkphbmUi..."></textarea>
+                        <textarea id="resultUrls" class="url-input" placeholder="Paste student result links here, one per line..."></textarea>
                         <button class="btn btn-primary" onclick="collectResults()">🔄 Collect All Results</button>
                     </div>
                     
